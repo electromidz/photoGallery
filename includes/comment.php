@@ -3,7 +3,7 @@ require_once(LIB_PATH.DS.'database.php');
 
 class Comment extends databaseObject{
     protected static $tableName = "comments";
-    protected static $dbFields = array('photographId', 'created', 'author', 'body');
+    protected static $dbFields = array('id', 'photographId', 'created', 'author', 'body');
     public $id;
     public $photographId;
     public $created;

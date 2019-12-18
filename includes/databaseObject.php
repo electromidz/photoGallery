@@ -3,7 +3,7 @@ require_once(LIB_PATH.DS.'database.php');
 
 class databaseObject
 {
-    protected static $tableName = 'users' ;
+    protected static $tableName ;
     protected static $dbFields;
 
 public static function findAll(){
@@ -120,13 +120,11 @@ public static function findAll(){
 
     public function delete(){
         global $database;
-
         $sql  = "DELETE FROM ".static::$tableName." ";
-        $sql .= "WHERE id=" . $database->escapeValue($this->id);
+        $sql .= " WHERE id=" . $database->escapeValue($this->id);
         $sql .= " LIMIT 1";
         $database->query($sql);
         return ($database->affectedRows() == 1 ) ? true : false;
-
     }
 
 }
