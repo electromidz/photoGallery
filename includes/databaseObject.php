@@ -7,11 +7,11 @@ class databaseObject
     protected static $dbFields;
 
 public static function findAll(){
-        return self::findBySql("SELECT * FROM " . self::$tableName);
+        return static::findBySql("SELECT * FROM " . static::$tableName);
     }
 
     public static function findById($id = 0){
-        $resultArray = self::findBySql("SELECT * FROM " . self::$tableName . " WHERE id = {$id} LIMIT 1");
+        $resultArray = static::findBySql("SELECT * FROM " . static::$tableName . " WHERE id = {$id} LIMIT 1");
         return !empty($resultArray) ? array_shift($resultArray) : false;
     }
 
@@ -54,7 +54,7 @@ public static function findAll(){
 
     protected function attribute(){
         $attribute = array();
-        foreach (self::$dbFields as $field){
+        foreach (static::$dbFields as $field){
             if(property_exists($this, $field)){
                 $attribute[$field] = $this->$field;
             }
@@ -79,11 +79,12 @@ public static function findAll(){
         global $database;
         $attribute = $this->sanitizedAttribute();
 
-        $sql  = "INSERT INTO ".self::$tableName." (";
+        $sql  = "INSERT INTO ".static::$tableName." (";
 //        $sql .= "username, password, firstName, lastName ";
         $sql .= join(", ", array_keys($attribute));
         $sql .= ") VALUES ('";
         $sql .= join("', '" , array_values($attribute));
+        $sql .= "');";
 //        $sql .= $database->escapeValue($this->username) . "', '";
 //        $sql .= $database->escapeValue($this->password) . "', '";
 //        $sql .= $database->escapeValue($this->firstName) . "', '";
@@ -105,7 +106,7 @@ public static function findAll(){
             $attributePairs[] = "{$key} = '{$value}'";
         }
 
-        $sql  = "UPDATE ".self::$tableName." SET ";
+        $sql  = "UPDATE ".static::$tableName." SET ";
         $sql .= join(", " , $attributePairs);
 //        $sql .= "username='" . $database->escapeValue($this->username) ."', ";
 //        $sql .= "password='" . $database->escapeValue($this->password) ."', ";
@@ -120,7 +121,7 @@ public static function findAll(){
     public function delete(){
         global $database;
 
-        $sql  = "DELETE FROM ".self::$tableName." ";
+        $sql  = "DELETE FROM ".static::$tableName." ";
         $sql .= "WHERE id=" . $database->escapeValue($this->id);
         $sql .= " LIMIT 1";
         $database->query($sql);

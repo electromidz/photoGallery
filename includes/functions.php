@@ -48,5 +48,9 @@ function logAction($action , $messag = ""){
         fclose($handle);
     }else{
         echo "Could not open log file or wrtitin on this.";
-    }    
+    }  
 }
+function datetimeToText($datetime = ""){
+    $unixdatetime = strtotime($datetime);
+    return strftime("%B %d, %Y at %I:%M %p", $unixdatetime);
+    }

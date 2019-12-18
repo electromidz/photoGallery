@@ -1,5 +1,6 @@
 <?php
-require_once(LIB_PATH.DS.'databaseObject.php');
+// require_once(LIB_PATH.DS.'databaseObject.php');
+require_once(LIB_PATH.DS.'database.php');
 
 class PhotoGraphs extends databaseObject {
     protected static $tableName = "photographs";
@@ -20,7 +21,7 @@ class PhotoGraphs extends databaseObject {
     UPLOAD_ERR_NO_FILE => "No file.",
     UPLOAD_ERR_NO_TMP_DIR => "No temporary directory.",
     UPLOAD_ERR_CANT_WRITE => "Can`t write to disk.",
-    UPLOAD_ERR_EXTENSION => "File upload stopPed by extension."
+    UPLOAD_ERR_EXTENSION => "File upload stopped by extension."
     );
 
     //Pass in $_FILE(['uploadFile']) as an argument
@@ -54,7 +55,7 @@ class PhotoGraphs extends databaseObject {
                 return false;
             }
             //Make sure the caption is not too long for the DB
-            if(strlen($this->caption <= 255)){
+            if(strlen($this->caption > 255)){
                 $this->errors[] = "The caption can only be 255 characters long.";
                 return false;
             }
@@ -85,6 +86,45 @@ class PhotoGraphs extends databaseObject {
             }
 
         }
+    }
+
+    public function imagePath(){
+        return $this->uploadDir . DS . $this->filename;
+    }
+
+    public function sizeAsText(){
+        if($this->size < 1024){
+            return "{$this->size} bytes;";
+        }elseif ($this->size < 1048576){
+            $sizeKB = round($this->size / 1024);
+            return "{$sizeKB} KB";
+        }else {
+            $sizeMB = round($this->size / 1048576 , 1);
+            return "{$sizeMB} MB"; 
+        }
+    }
+
+    public static function findById($id = 0){
+        global $database;
+        $resultArray = self::findBySql("SELECT * FROM " . self::$tableName .
+        " WHERE id=" . $database->escapeValue($id) . " LIMIT 1");
+        return !empty($resultArray) ? array_shift($resultArray) : false;
+    }
+
+    public function destroy(){
+        //First remove the database entry.
+        if($this->delete()){
+            $targetPath = SITE_ROOT . DS . 'public' . DS . $this->imagePath(); 
+            return unlink($targetPath) ? true : false; 
+
+        } else {
+            //database delete failed.
+            return false;
+        }
+    }
+
+    public function comments(){
+        return Comment::findCommentOn($this->id); 
     }
 }
 
