@@ -47,6 +47,14 @@ public static function findAll(){
         return $objectArray;
     }
 
+    public static function countAll(){
+        global $database;
+        $sql = "SELECT COUNT(*) FROM " . static::$tableName;
+        $resultSet = $database->query($sql);
+        $row = $database->fetchAssoc($resultSet);
+        return array_shift($row);
+    }
+
     private function hasAttribute($attribute){
         $objectVars = $this->attribute();
         return array_key_exists($attribute, $objectVars);
